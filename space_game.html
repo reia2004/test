@@ -1,0 +1,77 @@
+<html>
+<body>
+    <canvas id="MyCanvas" width="600" height="800" 
+        style="border: 1px solid black;"></canvas>
+    
+    <script type='module'>
+        "use strict";
+    
+        //Import classes from other modules
+        import {SpaceShip} from './js/SpaceShip.js';
+        import {AlienSpaceShip} from './js/AlienSpaceShip.js';
+        import {Missile} from './js/Missile.js';
+
+        /* Declare variables globally so that we can use them 
+            inside multiple functions. */
+        let humanSpaceShip;
+        let alienSpaceShip;
+        let context;
+        let missile;
+        let timer;
+
+        //Initialize game when window has loaded
+        window.onload = init;
+
+        //Sets up the components of the game when window has loaded
+        function init(){
+            let canvas = document.getElementById("MyCanvas");
+            context = canvas.getContext("2d");
+
+            //Set up human spaceship
+            humanSpaceShip = new SpaceShip("images/rocket.jpg", context, 250, 600);
+
+            //Set up alien spaceship
+            alienSpaceShip = new AlienSpaceShip("images/alien.png", context, 200, 20);
+
+            //Set up missile
+            missile = new Missile("images/missile.png", context, 285, 600);
+               
+            //Listen for space bar press so that we can launch missile
+            window.onkeypress = event => {
+                if(event.code === "Space"){
+                    missile.launch();
+                }
+            }
+
+            //Redraw everything every 100ms
+            timer = setInterval(draw, 100);
+        }
+
+        //Clears the canvas
+        function clearCanvas(){
+            context.fillStyle = "white";
+            context.fillRect(0, 0, 600, 800);
+        }
+
+
+        //Draws all of the components of the game
+        function draw(){
+            clearCanvas();
+            missile.draw();
+            humanSpaceShip.draw();
+            alienSpaceShip.draw();
+
+            //Check to see if missile has hit alien
+            if(alienSpaceShip.contains(missile)){
+                //End game
+                clearInterval(timer); 
+
+                //Display game over message
+                context.font = "bold 80px Arial";
+                context.fillStyle = "red";
+                context.fillText("GAME OVER!", 50, 400);
+            }
+        }
+    </script>
+</body>
+</html>
